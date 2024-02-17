@@ -22,7 +22,7 @@
                                 <?php
                                 if(!empty($categories)){
                                     foreach($categories as $category){ ?>
-                                    <option value="<?= $category->id ?>" <?= in_array($category->id, $selected) ? "selected" : NULL ; ?>><?= $category->name ?></option>
+                                    <option value="<?= $category->id ?>"><?= $category->name ?></option>
                                 <?php }
                             } ?>
                             </select>

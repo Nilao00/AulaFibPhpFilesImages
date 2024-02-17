@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use App\Services\ProductService;
 use App\Services\CategoryService;
 use Illuminate\Contracts\View\View;
@@ -19,12 +22,12 @@ class ProductController extends Controller
     /**
      * @return View
      */
-    public function index(): View
+    public function index()
     {
-        $products = $this->productService->findAll();
-        $categories = $this->categoryService->findAll();
-
-        return view('product.index', compact('products', 'categories', []));
+        $products = Product::get();
+        $categories = Category::get();
+        $selected_cat = [];
+        return view('product.index', compact('products', 'categories', 'selected_cat'));
     }
 
     /**
@@ -32,8 +35,8 @@ class ProductController extends Controller
      */
     public function add(): View
     {
-    	$categories = $this->categoryService->findAll();
-    	return view('product.add', compact('categories'));
+        $categories = $this->categoryService->findAll();
+        return view('product.add', compact('categories'));
     }
 
     /**
@@ -47,7 +50,7 @@ class ProductController extends Controller
             'description' => 'required',
         ]);
 
-        if(!$validator->fails()){
+        if (!$validator->fails()) {
             $this->productService->create($request->all());
         }
 
@@ -58,7 +61,7 @@ class ProductController extends Controller
      * @param $id
      * @return View|RedirectResponse
      */
-    public function edit($id): View|RedirectResponse
+    public function edit($id)
     {
         $product = $this->productService->find($id);
         $categories = $this->categoryService->findAll();
