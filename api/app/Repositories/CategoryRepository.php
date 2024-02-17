@@ -45,12 +45,10 @@ class CategoryRepository
         $this->categoryModel::where('id', $id)->delete();
     }
 
-    public function search(string $term)
+    public function search(?string $name)
     {
-        if (!$term) {
-            return $this->findPaginate(10);
-        }
-
-        return $this->categoryModel::search($term);
+        return $this->categoryModel::where('name', 'like', '%' . $name . '%')
+            ->where('active', 1)
+            ->paginate(10);
     }
 }

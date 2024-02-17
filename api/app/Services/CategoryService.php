@@ -76,8 +76,8 @@ class CategoryService
         return $this->categoryRepository->find($idAux);
     }
 
-    public function search(string $term)
+    public function search(string $name)
     {
-        return $this->categoryRepository->search($term);
+        return $this->categoryRepository->search($name);
     }
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Product;
 use App\Services\ProductService;
 use App\Services\CategoryService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -24,10 +23,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::get();
-        $categories = Category::get();
-        $selected_cat = [];
-        return view('product.index', compact('products', 'categories', 'selected_cat'));
+        $products = $this->productService->findPaginate(10);
+        $categories = $this->categoryService->findAll();
+        $selected = [];
+        return view('product.index', compact('products', 'categories', 'selected'));
     }
 
     /**
@@ -45,14 +44,13 @@ class ProductController extends Controller
      */
     public function save(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name' => 'required|min:10|max:255',
-            'description' => 'required',
+            'description' => 'required'
         ]);
-
-        if (!$validator->fails()) {
-            $this->productService->create($request->all());
-        }
+        
+        Log::info(json_encode($request->all()));
+        $this->productService->create($request->all());
 
         return redirect()->route('product.index');
     }
@@ -65,14 +63,14 @@ class ProductController extends Controller
     {
         $product = $this->productService->find($id);
         $categories = $this->categoryService->findAll();
-        $selected_cat = [];
+        $selected = [];
         $images = $product->images;
 
         if (!empty($product->categories)) {
             foreach ($product->categories as $category) {
                 $selected_cat[] = $category->pivot->category_id;
             }
-            return view('product.edit', compact('product', 'categories', 'selected_cat', 'images'));
+            return view('product.edit', compact('product', 'categories', 'selected', 'images'));
         }
 
         return redirect()->route('product.index');

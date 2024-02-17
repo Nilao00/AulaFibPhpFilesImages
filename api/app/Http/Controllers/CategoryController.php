@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\View\View;
 
+use function Laravel\Prompts\search;
+
 class CategoryController
 {
-
     public function __construct(
         protected CategoryService $categoryService
     ) {
@@ -52,9 +53,14 @@ class CategoryController
     }
     public function search(Request $request)
     {
-        $term = Arr::get($request->all(), 'term', '');
-        $category = $this->categoryService->search($term);
-        return view('category.search', compact('category'));
+        $request->validate([
+            'name' => 'sometimes|min:1|max:255'
+        ]);
+
+        $search = $request->get('name') ?? '';
+
+        $categories = $this->categoryService->search($search);
+        return view('category.index', compact('categories', 'search'));
     }
 
     public function update(Request $request, $id)

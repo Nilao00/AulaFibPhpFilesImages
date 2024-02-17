@@ -23,12 +23,11 @@ class ProductService
     }
     public function create(array $data)
     {
-        $image = Arr::get($data, 'image', []);
-        $image = $data['image'];
-        $fileName = FileService::move($image, self::IMAGE_PATH);
+        $name = Arr::get($data, 'name');
+        $description = Arr::get($data, 'description');
         $this->productRepository->create([
-            'name' => Arr::get($data, 'name'),
-            'image' => $fileName
+            'name' => $name,
+            'description' => $description
         ]);
     }
 
@@ -37,16 +36,10 @@ class ProductService
         $product = $this->productRepository->find($id);
         if (!empty($product)) {
             $update = [
-                'name' => Arr::get($data, 'name')
+                'name' => Arr::get($data, 'name'),
+                'description' => Arr::get($data, 'description')
             ];
 
-            $newimage = Arr::get($data, 'image');
-            $deletedImage = Arr::get($data, 'deleted_image');
-            if (!empty($newimage)) {
-                $fileName = FileService::move($newimage, self::IMAGE_PATH);
-                $update['image'] = $fileName;
-                FileService::delete($deletedImage, self::IMAGE_PATH);
-            }
             return $product->update($update);
         }
         return false;
